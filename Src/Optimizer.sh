@@ -8,24 +8,34 @@ BLUE = "\033[34m"
 WHITE = "\033[0m"
 Filename = ""
 
+#Init
 for folder in ["Mods","Temp","Output"]
 do
 	if [ -d "$folder" ]
 	then
-		echo -e '$GREEN "$folder" folder found. $WHITE'
+		print '"$folder" folder found.'
 		
 	else
-		echo -e '$GREEN "$folder" folder not found, creating it. $WHITE'
-		mkdir Mods
+		print '$"$folder" folder not found, creating it.'
+		mkdir $folder
 	fi
 done
+
+function print(){
+	if [ "$#" -eq 2 ]
+	then
+		echo -e $GREEN"$1" $BLUE"$2" $WHITE
+	else
+		echo -e $GREEN"$1" $WHITE
+	fi
+	}
 
 function Unzip_mod(){
 	target = "$1"
 	Filename = `basename "$target" `
 	mv "$target" ../Temp/"$Filename"
-	unzip -o -d ./Temp/"$Filename" ./Temp/"$Filename"
-	
+	unzip -qq -o -d ./Temp/"$Filename" ./Temp/"$Filename"
+	rm -f ./Temp/"$Filename"
 	}
 	
 function Optimize_textures(){
@@ -34,7 +44,7 @@ function Optimize_textures(){
 	ColorPalette = "$1"
 	for PNG in "$(find . -name '*.png' )"
 	do
-		echo -e "'$GREEN'Optimizing '$BLUE' `basename $PNG` '$WHITE'"
+		print "Optimizing" "`basename $PNG`"
 		pngquant --ext .png -f --speed 1 --quiet "$ColorPalette" "$PNG"
 		
 	done
@@ -50,17 +60,40 @@ function Optimize_audio(){
 	Bitrate = "$2"
 	for AUDIO in $(find . -name '*.ogg'); 
 	do
-		echo -e "'$GREEN'Optimizing '$BLUE' `basename $AUDIO` '$WHITE'"
+		print "Optimizing" "`basename $AUDIO`"
 		ffmpeg -i "$AUDIO" -v 0 -y -ar "$Frequency" -b:a "$Bitrate" -f ogg "${audio%.*}.ogg"
 	done
 	cd ..
 	
 	}
 	
+function Remove_assets(){
+	#This function assumes there is something to optimize !
+	cd Temp
+	print "Removing" "assets"
+	rm -f -R assets
+	print "Removing leftover files..."
+	
+	for PNG in "$(find . -name '*.png' )"
+	do
+		print "Removing" "`basename $PNG`"
+		rm -f "$PNG"
+		
+	done
+	
+	for AUDIO in $(find . -name '*.ogg'); 
+	do
+		print "Removing" "`basename $AUDIO`"
+	rm -f "$AUDIO"
+	done
+	cd ..
+	
+	}
+	
 function Repackage_mod(){
-	
-	
-	
+	zip -r -9 --quiet "$Filename" ./Temp/*
+	mv ./Temp/"$Filename" ./Output/"$Filename"
+	#rm -f -R *
 	}
 	
 	
