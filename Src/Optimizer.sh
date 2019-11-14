@@ -91,9 +91,10 @@ function Remove_assets(){
 	}
 	
 function Repackage_mod(){
+	print "Rapackaging" "$Filename"
 	zip -r -9 --quiet "$Filename" ./Temp/*
 	mv ./Temp/"$Filename" ./Output/"$Filename"
-	#rm -f -R *
+	rm -f -R Temp/*
 	}
 	
 	
