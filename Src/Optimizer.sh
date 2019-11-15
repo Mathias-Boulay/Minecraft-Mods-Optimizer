@@ -22,7 +22,7 @@ do
 	fi
 done
 
-function print(){
+function print_msg(){
 	if [ "$#" -eq 2 ]
 	then
 		echo -e $GREEN"$1" $BLUE"$2" $WHITE
@@ -31,9 +31,10 @@ function print(){
 	fi
 	}
 
-function Unzip_mod(){
+function Prepare_package(){
 	target = "$1"
 	Filename = `basename "$target" `
+	print_msg "Preparing " "$Filename"
 	mv "$target" ../Temp/"$Filename"
 	unzip -qq -o -d ./Temp/"$Filename" ./Temp/"$Filename"
 	rm -f ./Temp/"$Filename"
@@ -44,7 +45,7 @@ function Optimize_textures(){
 	ColorPalette = "$1"
 	for PNG in "$(find . -name '*.png' )"
 	do
-		print "Optimizing" "`basename $PNG`"
+		print_msg "Optimizing" "`basename $PNG`"
 		pngquant --ext .png -f --speed 1 --quiet "$ColorPalette" "$PNG"
 		
 	done
@@ -59,7 +60,7 @@ function Optimize_audio(){
 	Bitrate = "$2"
 	for AUDIO in $(find . -name '*.ogg'); 
 	do
-		print "Optimizing" "`basename $AUDIO`"
+		print_msg "Optimizing" "`basename $AUDIO`"
 		ffmpeg -i "$AUDIO" -v 0 -y -ar "$Frequency" -b:a "$Bitrate" -f ogg "${audio%.*}.ogg"
 	done
 	cd ..
@@ -68,20 +69,20 @@ function Optimize_audio(){
 	
 function Remove_assets(){
 	cd Temp
-	print "Removing" "assets"
+	print_msg "Removing" "assets"
 	rm -f -R assets
-	print "Removing leftover files..."
+	print_msg "Removing leftover files..."
 	
 	for PNG in "$(find . -name '*.png' )"
 	do
-		print "Removing" "`basename $PNG`"
+		print_msg "Removing" "`basename $PNG`"
 		rm -f "$PNG"
 		
 	done
 	
 	for AUDIO in $(find . -name '*.ogg'); 
 	do
-		print "Removing" "`basename $AUDIO`"
+		print_msg "Removing" "`basename $AUDIO`"
 	rm -f "$AUDIO"
 	done
 	cd ..
@@ -89,7 +90,7 @@ function Remove_assets(){
 	}
 	
 function Repackage_mod(){
-	print "Rapackaging" "$Filename"
+	print_msg "Rapackaging" "$Filename"
 	zip -r -9 --quiet "$Filename" ./Temp/*
 	mv ./Temp/"$Filename" ./Output/"$Filename"
 	rm -f -R Temp/*
@@ -100,37 +101,52 @@ function Repackage_mod(){
 function main_menu(){
 	clear
 	
-	print "     _           ___  ___   _____     "
-	print "    | |         /   |/   | |_   _|    "
-	print "    | |        / /|   /| |   | |      "
-	print "    | |       / / |__/ | |   | |      "
-	print "    | |___   / /       | |   | |      "
-	print "    |_____| /_/        |_|   |_|      "
+	print_msg "     _           ___  ___   _____     "
+	print_msg "    | |         /   |/   | |_   _|    "
+	print_msg "    | |        / /|   /| |   | |      "
+	print_msg "    | |       / / |__/ | |   | |      "
+	print_msg "    | |___   / /       | |   | |      "
+	print_msg "    |_____| /_/        |_|   |_|      "
 
 
-	Choice-1 = "Optimize textures"
-	Choice-2 = "Optimize sounds"
-	Choice-3 = "Optimize both textures and sounds"
+	Choice-1 = "Optimize textures (manual quality)"
+	Choice-2 = "Optimize sounds (manual quality)"
+	Choice-3 = "Automatically optimize both textures and sounds (recommended)"
 	Choice-4 = "Server side optimization"
+	Choice-5 = "Exit the prorgram"
 	
-	select choice in "$Choice-1" "$Choice-2" "Choice-3" "Choice-4"
+	select choice in "$Choice-1" "$Choice-2" "Choice-3" "Choice-4" "Choice-5"
 	do
 		case "$choice" in 
 			"$Choice-1")
 				#Optimize textures
+				
 				;;
 			"$Choice-2")
 				#Optimize audio
 				;;
 			"$Choice-3")
 				#Optimize both audio and textures
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File");
+					Optimize_textures(256);
+					Optimize_audio(36000,80);
+					Repackage_mod();
+				done
+				
 				;;
 			"$Choice-4")
 				#optimize files for server use.
 				;;
+			"$Choice-5")
+				print_msg "Okay, I'll exit then."
+				exit 0
+				;;
 				
 			*)
 				#Nothing has been chosen
+				print_msg "This isn't a valid choice !"
 				;;
 				
 		esac
