@@ -1,12 +1,13 @@
 #!bin/bash
 
 #Needed programs: PNGQuant; FFMPEG; Zip/Unzip
-#All functions thinks we are in the same folder as the file.
+#All functions thinks we are in the same folder as this file.
 
 GREEN = "\033[32m"
 BLUE = "\033[34m"
 WHITE = "\033[0m"
 Filename = ""
+HorizontalLine = "============================================================================"
 
 #Init
 for folder in ["Mods","Temp","Output"]
@@ -39,7 +40,6 @@ function Unzip_mod(){
 	}
 	
 function Optimize_textures(){
-	#This function assumes there is something to optimize !
 	cd Temp
 	ColorPalette = "$1"
 	for PNG in "$(find . -name '*.png' )"
@@ -54,7 +54,6 @@ function Optimize_textures(){
 	
 	
 function Optimize_audio(){
-	#This function assumes there is something to optimize !
 	cd Temp
 	Frequency = "$1"
 	Bitrate = "$2"
@@ -68,7 +67,6 @@ function Optimize_audio(){
 	}
 	
 function Remove_assets(){
-	#This function assumes there is something to optimize !
 	cd Temp
 	print "Removing" "assets"
 	rm -f -R assets
@@ -95,6 +93,52 @@ function Repackage_mod(){
 	zip -r -9 --quiet "$Filename" ./Temp/*
 	mv ./Temp/"$Filename" ./Output/"$Filename"
 	rm -f -R Temp/*
+	}
+	
+
+
+function main_menu(){
+	clear
+	
+	print "     _           ___  ___   _____     "
+	print "    | |         /   |/   | |_   _|    "
+	print "    | |        / /|   /| |   | |      "
+	print "    | |       / / |__/ | |   | |      "
+	print "    | |___   / /       | |   | |      "
+	print "    |_____| /_/        |_|   |_|      "
+
+
+	Choice-1 = "Optimize textures"
+	Choice-2 = "Optimize sounds"
+	Choice-3 = "Optimize both textures and sounds"
+	Choice-4 = "Server side optimization"
+	
+	select choice in "$Choice-1" "$Choice-2" "Choice-3" "Choice-4"
+	do
+		case "$choice" in 
+			"$Choice-1")
+				#Optimize textures
+				;;
+			"$Choice-2")
+				#Optimize audio
+				;;
+			"$Choice-3")
+				#Optimize both audio and textures
+				;;
+			"$Choice-4")
+				#optimize files for server use.
+				;;
+				
+			*)
+				#Nothing has been chosen
+				;;
+				
+		esac
+	
+	
+	done
+	
+	
 	}
 	
 	
