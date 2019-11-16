@@ -43,6 +43,7 @@ function Prepare_package(){
 function Optimize_textures(){
 	cd Temp
 	ColorPalette = "$1"
+	print_msg "Starting textures optimization..."
 	for PNG in "$(find . -name '*.png' )"
 	do
 		print_msg "Optimizing" "`basename $PNG`"
@@ -58,6 +59,7 @@ function Optimize_audio(){
 	cd Temp
 	Frequency = "$1"
 	Bitrate = "$2"
+	print_msg "Starting sounds optimization..."
 	for AUDIO in $(find . -name '*.ogg'); 
 	do
 		print_msg "Optimizing" "`basename $AUDIO`"
@@ -100,46 +102,55 @@ function Repackage_mod(){
 
 function main_menu(){
 	clear
-	
+	print_msg $HorizontalLine
 	print_msg "     _           ___  ___   _____     "
 	print_msg "    | |         /   |/   | |_   _|    "
 	print_msg "    | |        / /|   /| |   | |      "
 	print_msg "    | |       / / |__/ | |   | |      "
 	print_msg "    | |___   / /       | |   | |      "
 	print_msg "    |_____| /_/        |_|   |_|      "
+	print_msg $HorizontalLine
 
 
-	Choice-1 = "Optimize textures (manual quality)"
-	Choice-2 = "Optimize sounds (manual quality)"
-	Choice-3 = "Automatically optimize both textures and sounds (recommended)"
-	Choice-4 = "Server side optimization"
-	Choice-5 = "Exit the prorgram"
+	ChoiceMAIN-1 = "Optimize textures (manual quality)"
+	ChoiceMAIN-2 = "Optimize sounds (manual quality)"
+	ChoiceMAIN-3 = "Automatically optimize both textures and sounds (recommended)"
+	ChoiceMAIN-4 = "Server side optimization"
+	ChoiceMAIN-5 = "Exit the prorgram"
 	
-	select choice in "$Choice-1" "$Choice-2" "Choice-3" "Choice-4" "Choice-5"
+	select choiceMAIN in "$ChoiceMAIN-1" "$ChoiceMAIN-2" "ChoiceMAIN-3" "ChoiceMAIN-4" "ChoiceMAIN-5"
 	do
-		case "$choice" in 
-			"$Choice-1")
+		case "$choiceMAIN" in 
+			"$ChoiceMAIN-1")
 				#Optimize textures
-				
+				textures_menu()
+				return 0
 				;;
-			"$Choice-2")
+			"$ChoiceMAIN-2")
 				#Optimize audio
+				sounds_menu()
+				return 0
 				;;
-			"$Choice-3")
+			"$ChoiceMAIN-3")
 				#Optimize both audio and textures
 				for File in "$(find . -name '*.jar' -o -name '*.zip')"
 				do
-					Prepare_package("$File");
-					Optimize_textures(256);
-					Optimize_audio(36000,80);
-					Repackage_mod();
+					Prepare_package("$File")
+					Optimize_textures(256)
+					Optimize_audio(36000,80)
+					Repackage_mod()
 				done
-				
 				;;
-			"$Choice-4")
+			"$ChoiceMAIN-4")
 				#optimize files for server use.
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Remove_assets()
+					Repackage_mod()
+				done
 				;;
-			"$Choice-5")
+			"$ChoiceMAIN-5")
 				print_msg "Okay, I'll exit then."
 				exit 0
 				;;
@@ -155,6 +166,118 @@ function main_menu(){
 	done
 	
 	
+	}
+	
+function textures_menu(){
+	clear
+	print_msg $HorizontalLine
+	
+	ChoicePNG-1 = "High - Most of the size advantage with minimal quality loss (recommended)"
+	ChoicePNG-2 = "Medium - Extra size loss but the quality degradation tends to be way more visible "
+	ChoicePNG-3 = "Low - Only choose this if you're desperate, since the color palette will be overdegraded, it's less enjoyable to look at in game"
+	ChoicePNG-4 = "Cancel the textures optimization and go back to the main menu"
+	
+	select choicePNG in "$ChoicePNG-1" "$ChoicePNG-2" "ChoicePNG-3" "ChoicePNG-4"
+	do
+		case "$choicePNG" in
+		
+			"$ChoicePNG-1")
+				#Optimize for High Quality
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Optimize_textures(256)
+					Repackage_mod()
+				done
+				return 0
+				;;
+			"$ChoicePNG-2")
+				#Optimize for Medium Quality
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Optimize_textures(128)
+					Repackage_mod()
+				done
+				return 0;
+				;;
+			"$ChoicePNG-3")
+				#Optimize for Low Quality
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Optimize_textures(64)
+					Repackage_mod()
+				done
+				return 0;
+				;;
+			"$ChoicePNG-4")
+				#return
+				return 0;
+				;;
+				
+			*)
+				#Nothing has been chosen
+				print_msg "This isn't a valid choice !"
+				;;
+		esac
+	done
+	}
+	
+function sounds_menu(){
+	clear
+	print_msg $HorizontalLine
+	
+	ChoiceOGG-1 = "High - Light file size reduction with minimal quality loss (recommended)"
+	ChoiceOGG-2 = "Medium - Extra size loss, however the best ears may be able to see a difference "
+	ChoiceOGG-3 = "Low - Best size loss, may be uncomfortable to hear on long term."
+	ChoiceOGG-4 = "Cancel the sounds optimization and go back to the main menu"
+	
+	select choiceOGG in "$ChoiceOGG-1" "$ChoiceOGG-2" "ChoiceOGG-3" "ChoiceOGG-4"
+	do
+		case "$choiceOGG" in
+		
+			"$ChoiceOGG-1")
+				#Optimize for High Quality
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Optimize_audio(36000,120)
+					Repackage_mod()
+				done
+				return 0
+				;;
+			"$ChoiceOGG-2")
+				#Optimize for Medium Quality
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Optimize_audio(36000,100)
+					Repackage_mod()
+				done
+				return 0;
+				;;
+			"$ChoiceOGG-3")
+				#Optimize for Low Quality
+				for File in "$(find . -name '*.jar' -o -name '*.zip')"
+				do
+					Prepare_package("$File")
+					Optimize_audio(36000,80)
+					Repackage_mod()
+				done
+				return 0;
+				;;
+			"$ChoiceOGG-4")
+				#return
+				return 0;
+				;;
+				
+			*)
+				#Nothing has been chosen
+				print_msg "This isn't a valid choice !"
+				;;
+		esac
+	done
 	}
 	
 	
