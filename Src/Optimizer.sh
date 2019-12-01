@@ -9,19 +9,6 @@ WHITE = "\033[0m"
 Filename = ""
 HorizontalLine = "============================================================================"
 
-#Init
-for folder in ["Mods","Temp","Output"]
-do
-	if [ -d "$folder" ]
-	then
-		print '"$folder" folder found.'
-		
-	else
-		print '$"$folder" folder not found, creating it.'
-		mkdir $folder
-	fi
-done
-
 function print_msg(){
 	if [ "$#" -eq 2 ]
 	then
@@ -154,18 +141,12 @@ function main_menu(){
 				print_msg "Okay, I'll exit then."
 				exit 0
 				;;
-				
 			*)
 				#Nothing has been chosen
 				print_msg "This isn't a valid choice !"
 				;;
-				
 		esac
-	
-	
 	done
-	
-	
 	}
 	
 function textures_menu(){
@@ -279,6 +260,19 @@ function sounds_menu(){
 		esac
 	done
 	}
+	
+#Init
+for folder in ["Mods","Temp","Output"]
+do
+	if [ -d "$folder" ]
+	then
+		print '"$folder" folder found.'
+		
+	else
+		print '$"$folder" folder not found, creating it.'
+		mkdir $folder
+	fi
+done
 	
 main_menu()
 	
