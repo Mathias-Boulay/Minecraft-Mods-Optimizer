@@ -184,7 +184,7 @@ then
 		for File in "$(find . -name '*.jar' -o -name '*.zip')"
 		do
 			Prepare_package "$File"
-			Optimize_sounds 36000 120
+			Optimize_audio 36000 120
 			Repackage_mod 
 		done
 		
@@ -194,7 +194,7 @@ then
 		for File in "$(find . -name '*.jar' -o -name '*.zip')"
 		do
 			Prepare_package "$File"
-			Optimize_textures 36000 100
+			Optimize_audio 36000 100
 			Repackage_mod
 		done
 	
@@ -204,7 +204,7 @@ then
 		for File in "$(find . -name '*.jar' -o -name '*.zip')"
 		do
 			Prepare_package "$File"
-			Optimize_textures 36000 80
+			Optimize_audio 36000 80
 			Repackage_mod
 		done
 	
