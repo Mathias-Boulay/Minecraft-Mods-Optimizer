@@ -1,5 +1,7 @@
 # WARNING ! THE DEVELOPPEMENT OF THIS PIECE OF CODE HAS BEEN STOPPED DUE DO A NUMBER OF VARIABLES I WASN'T ABLE TO HAVE CONTROL ON (mainly discrepancies betwwen distros)... 
 
+## Use this instead: https://github.com/serpentspirale/Java-Mods-Optimizer 
+
 # Minecraft-Mods-Optimizer: The universal solution for reducing minecraft modpacks file size and ram usage.
 
 # How does this work ?
